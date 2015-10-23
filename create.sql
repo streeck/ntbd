@@ -25,7 +25,7 @@ CREATE TABLE Perfil (
 );
 
 CREATE TABLE Canal (
-    chaveCanal int PRIMARY KEY,
+    chaveCanal serial PRIMARY KEY,
     canal varchar NOT NULL,
     qtdInscritos int NOT NULL
 );
