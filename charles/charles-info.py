@@ -5,6 +5,7 @@ import httplib2
 import os
 import sys
 import json
+import psycopg2
 
 from apiclient.discovery import build
 from apiclient.errors import HttpError
@@ -53,9 +54,16 @@ https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
 """ % os.path.abspath(os.path.join(os.path.dirname(__file__),
                                    CLIENT_SECRETS_FILE))
 
-# countries = ['EG', 'SN', 'ZW', 'AO', 'RW', 'BW', 'BR', 'CU', 'US', 'IN', 'HK', 'JP', 'DK', 'BE', 'DE', 'FR', 'IT', 'IE', 'PL', 'SE', 'GB', 'VU', 'AU']
 
-countries = ['US', 'BR', 'GB']
+def writeData(query):
+    conn = psycopg2.connect(database="youtubiu", user="charles", password="asdf", host="127.0.0.1", port="5432")
+    cur = conn.cursor()
+    cur.execute(query)
+
+    conn.commit()
+    print "Records created successfully"
+
+    conn.close()
 
 def get_authenticated_services(args):
   flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
@@ -85,7 +93,7 @@ def get_channel_id(youtube):
 
   return channels_list_response["items"][0]["id"]
 
-def run_analytics_report(youtube_analytics, channel_id, options, opt):
+def run_analytics_report(youtube_analytics, channel_id, options):
   # Call the Analytics API to retrieve a report. For a list of available
   # reports, see:
   # https://developers.google.com/youtube/analytics/v1/channel_reports
@@ -97,12 +105,9 @@ def run_analytics_report(youtube_analytics, channel_id, options, opt):
     end_date=options.end_date,
     max_results=options.max_results,
     sort=options.sort,
-    filters="video==%s" % opt
   ).execute()
 
-  print "Analytics Data for Video %s" % opt
-  f = open('data-video-{1}.json'.format(sys.argv[0], opt), 'w')
-  json.dump(analytics_query_response, f)
+  print "Analytics Data for Channel %s" % channel_id
 
   for column_header in analytics_query_response.get("columnHeaders", []):
     print "%-20s" % column_header["name"],
@@ -111,6 +116,7 @@ def run_analytics_report(youtube_analytics, channel_id, options, opt):
   for row in analytics_query_response.get("rows", []):
     for value in row:
       print "%-20s" % value,
+      writeData("INSERT INTO Canal(canal, qtdInscritos) VALUES ('{channel}', {qtd})".format(channel=channel_id, qtd=value))
     print
 
 if __name__ == "__main__":
@@ -119,25 +125,19 @@ if __name__ == "__main__":
   one_week_ago = (now - timedelta(days=7)).strftime("%Y-%m-%d")
 
   argparser.add_argument("--metrics", help="Report metrics",
-    default="views,likes,dislikes")
-  argparser.add_argument("--dimensions", help="Report dimensions",
-    default="day")
+    default="subscribersGained")
+  argparser.add_argument("--dimensions", help="Report dimensions")
   argparser.add_argument("--start-date", default="2005-02-18",
     help="Start date, in YYYY-MM-DD format")
   argparser.add_argument("--end-date", default="2015-10-20",
     help="End date, in YYYY-MM-DD format")
   argparser.add_argument("--max-results", help="Max results", default=9999)
-  argparser.add_argument("--sort", help="Sort order", default="day")
-  argparser.add_argument("--filters", help="Filters", default="")
+  argparser.add_argument("--sort", help="Sort order")
   args = argparser.parse_args()
 
   (youtube, youtube_analytics) = get_authenticated_services(args)
   try:
     channel_id = get_channel_id(youtube)
-    videoList = open('videos.json', 'r')
-    for value in json.loads(videoList.read()):
-      for country in countries:
-        print value[0], country
-        run_analytics_report(youtube_analytics, channel_id, args, "{video};country=={country}".format(video=value[0], country=country))
+    run_analytics_report(youtube_analytics, channel_id, args)
   except HttpError, e:
     print "An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)

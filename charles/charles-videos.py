@@ -119,7 +119,7 @@ if __name__ == "__main__":
     default="views")
   argparser.add_argument("--dimensions", help="Report dimensions",
     default="video")
-  argparser.add_argument("--start-date", default="2005-02-18",
+  argparser.add_argument("--start-date", default="2006-01-01",
     help="Start date, in YYYY-MM-DD format")
   argparser.add_argument("--end-date", default="2015-10-20",
     help="End date, in YYYY-MM-DD format")
