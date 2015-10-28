@@ -29,8 +29,6 @@ def youtube_search(options):
   ).execute()
 
   videos = []
-  channels = []
-  playlists = []
 
   # Add each result to the appropriate list, and then display the lists of
   # matching videos, channels, and playlists.
@@ -38,16 +36,8 @@ def youtube_search(options):
     if search_result["id"]["kind"] == "youtube#video":
       videos.append("%s (%s)" % (search_result["snippet"]["title"],
                                  search_result["id"]["videoId"]))
-    elif search_result["id"]["kind"] == "youtube#channel":
-      channels.append("%s (%s)" % (search_result["snippet"]["title"],
-                                   search_result["id"]["channelId"]))
-    elif search_result["id"]["kind"] == "youtube#playlist":
-      playlists.append("%s (%s)" % (search_result["snippet"]["title"],
-                                    search_result["id"]["playlistId"]))
 
   print "Videos:\n", "\n".join(videos), "\n"
-  print "Channels:\n", "\n".join(channels), "\n"
-  print "Playlists:\n", "\n".join(playlists), "\n"
 
 
 def youtube_video(options):
