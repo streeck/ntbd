@@ -44,3 +44,7 @@ CREATE TABLE Video (
     FOREIGN KEY(chaveCanal) REFERENCES Canal(chaveCanal),
     PRIMARY KEY(chaveTempo, chavePerfil, chaveCanal, video)
 );
+
+SELECT pg_size_pretty(pg_database_size('youtubiu'));
+
+SELECT pg_size_pretty(pg_table_size('Video'));
