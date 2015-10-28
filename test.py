@@ -57,16 +57,28 @@ def youtube_video(options):
     print "Views: {:,}".format(int(video_result["statistics"]["viewCount"]))
     print "Likes: {:,}".format(int(video_result["statistics"]["likeCount"]))
     print "Dislikes: {:,}".format(int(video_result["statistics"]["dislikeCount"]))
+    print "\n------------------------------------------------\n"
+
+    return {'id': '{}'.format(video_result["id"]),
+            'channelId': '{}'.format(video_result["snippet"]["channelId"]),
+            'title': u'{}'.format(video_result["snippet"]["title"]).encode('utf-8'),
+            'date': video_result["snippet"]["publishedAt"][:10],
+            'stats': {'views': int(video_result["statistics"]["viewCount"]),
+                      'likes': int(video_result["statistics"]["likeCount"]),
+                      'dislikes': int(video_result["statistics"]["dislikeCount"])}}
 
 
-    with open('video-{}'.format(video_result["id"]), 'w') as output:
-      json.dump({'title': u"{}".format(video_result["snippet"]["title"]).encode('utf-8'),
-                 'channelId': video_result["snippet"]["channelId"],
-                 'date': video_result["snippet"]["publishedAt"][:10],
-                 'views': int(video_result["statistics"]["viewCount"]),
-                 'likes': int(video_result["statistics"]["likeCount"]),
-                 'dislikes': int(video_result["statistics"]["dislikeCount"])
-                 }, output)
+def jsonGenerator(options):
+  videoList = youtube_search(options)
+
+  jsonFile = {'videos': []}
+
+  for video in videoList:
+    options.video_id = video
+    jsonFile["videos"].append(youtube_video(options))
+
+  with open('synthetic-data.json', 'w') as output:
+    json.dump(jsonFile, output)
 
 
 if __name__ == "__main__":
@@ -83,6 +95,6 @@ if __name__ == "__main__":
       print "An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)
   else:
     try:
-      youtube_search(args)
+      jsonGenerator(args)
     except HttpError, e:
       print "An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)
