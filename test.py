@@ -25,7 +25,8 @@ def youtube_search(options):
   search_response = youtube.search().list(
     part="id,snippet",
     maxResults=options.max_results,
-    order="viewCount"
+    order="viewCount",
+    q=options.search
   ).execute()
 
   videos = []
@@ -72,6 +73,7 @@ def youtube_video(options):
 if __name__ == "__main__":
   argparser.add_argument("--id", help="Video ID")
   argparser.add_argument("--max-results", help="Max results", default=25)
+  argparser.add_argument("--search", help="Search terms")
   args = argparser.parse_args()
 
   if args.id:
