@@ -80,6 +80,8 @@ def jsonGenerator(options):
   with open('synthetic-data.json', 'w') as output:
     json.dump(jsonFile, output)
 
+  print "Data extraction completed!"
+
 
 if __name__ == "__main__":
   argparser.add_argument("--video-id", help="Video ID")
