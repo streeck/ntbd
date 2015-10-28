@@ -26,7 +26,8 @@ def youtube_search(options):
     part="id,snippet",
     maxResults=options.max_results,
     order="viewCount",
-    q=options.search
+    q=options.search,
+    channelId=options.channel_id
   ).execute()
 
   videos = []
@@ -38,7 +39,7 @@ def youtube_search(options):
       videos.append("%s (%s)" % (search_result["snippet"]["title"],
                                  search_result["id"]["videoId"]))
 
-  print "Videos:\n", "\n".join(videos), "\n"
+  return videos
 
 
 def youtube_video(options):
@@ -46,7 +47,7 @@ def youtube_video(options):
 
   video_response = youtube.videos().list(
     part="snippet,statistics",
-    id=options.id
+    id=options.video_id
   ).execute()
 
   for video_result in video_response.get("items", []):
@@ -69,19 +70,18 @@ def youtube_video(options):
                  }, output)
 
 
-
 if __name__ == "__main__":
-  argparser.add_argument("--id", help="Video ID")
+  argparser.add_argument("--video-id", help="Video ID")
   argparser.add_argument("--max-results", help="Max results", default=25)
   argparser.add_argument("--search", help="Search terms")
+  argparser.add_argument("--channel-id", help="Channel ID")
   args = argparser.parse_args()
 
-  if args.id:
+  if args.video_id:
     try:
       youtube_video(args)
     except HttpError, e:
       print "An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)
-
   else:
     try:
       youtube_search(args)
