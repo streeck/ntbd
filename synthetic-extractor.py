@@ -25,29 +25,20 @@ def youtube_search(options):
   search_response = youtube.search().list(
     part="id,snippet",
     maxResults=options.max_results,
-    order="viewCount"
+    order="viewCount",
+    q=options.search,
+    channelId=options.channel_id
   ).execute()
 
   videos = []
-  channels = []
-  playlists = []
 
   # Add each result to the appropriate list, and then display the lists of
   # matching videos, channels, and playlists.
   for search_result in search_response.get("items", []):
     if search_result["id"]["kind"] == "youtube#video":
-      videos.append("%s (%s)" % (search_result["snippet"]["title"],
-                                 search_result["id"]["videoId"]))
-    elif search_result["id"]["kind"] == "youtube#channel":
-      channels.append("%s (%s)" % (search_result["snippet"]["title"],
-                                   search_result["id"]["channelId"]))
-    elif search_result["id"]["kind"] == "youtube#playlist":
-      playlists.append("%s (%s)" % (search_result["snippet"]["title"],
-                                    search_result["id"]["playlistId"]))
+      videos.append("%s" % (search_result["id"]["videoId"]))
 
-  print "Videos:\n", "\n".join(videos), "\n"
-  print "Channels:\n", "\n".join(channels), "\n"
-  print "Playlists:\n", "\n".join(playlists), "\n"
+  return videos
 
 
 def youtube_video(options):
@@ -55,7 +46,7 @@ def youtube_video(options):
 
   video_response = youtube.videos().list(
     part="snippet,statistics",
-    id=options.id
+    id=options.video_id
   ).execute()
 
   for video_result in video_response.get("items", []):
@@ -66,32 +57,46 @@ def youtube_video(options):
     print "Views: {:,}".format(int(video_result["statistics"]["viewCount"]))
     print "Likes: {:,}".format(int(video_result["statistics"]["likeCount"]))
     print "Dislikes: {:,}".format(int(video_result["statistics"]["dislikeCount"]))
+    print "\n------------------------------------------------\n"
+
+    return {'id': '{}'.format(video_result["id"]),
+            'channelId': '{}'.format(video_result["snippet"]["channelId"]),
+            'title': u'{}'.format(video_result["snippet"]["title"]).encode('utf-8'),
+            'date': video_result["snippet"]["publishedAt"][:10],
+            'stats': {'views': int(video_result["statistics"]["viewCount"]),
+                      'likes': int(video_result["statistics"]["likeCount"]),
+                      'dislikes': int(video_result["statistics"]["dislikeCount"])}}
 
 
-    with open('video-{}'.format(video_result["id"]), 'w') as output:
-      json.dump({'title': u"{}".format(video_result["snippet"]["title"]).encode('utf-8'),
-                 'channelId': video_result["snippet"]["channelId"],
-                 'date': video_result["snippet"]["publishedAt"][:10],
-                 'views': int(video_result["statistics"]["viewCount"]),
-                 'likes': int(video_result["statistics"]["likeCount"]),
-                 'dislikes': int(video_result["statistics"]["dislikeCount"])
-                 }, output)
+def jsonGenerator(options):
+  videoList = youtube_search(options)
 
+  jsonFile = {'videos': []}
+
+  for video in videoList:
+    options.video_id = video
+    jsonFile["videos"].append(youtube_video(options))
+
+  with open('synthetic-data.json', 'w') as output:
+    json.dump(jsonFile, output)
+
+  print "Data extraction completed!"
 
 
 if __name__ == "__main__":
-  argparser.add_argument("--id", help="Video ID")
+  argparser.add_argument("--video-id", help="Video ID")
   argparser.add_argument("--max-results", help="Max results", default=25)
+  argparser.add_argument("--search", help="Search terms")
+  argparser.add_argument("--channel-id", help="Channel ID")
   args = argparser.parse_args()
 
-  if args.id:
+  if args.video_id:
     try:
       youtube_video(args)
     except HttpError, e:
       print "An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)
-
   else:
     try:
-      youtube_search(args)
+      jsonGenerator(args)
     except HttpError, e:
       print "An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)
