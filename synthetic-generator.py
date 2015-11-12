@@ -89,7 +89,7 @@ class Video(object):
                        chavePerfil=profileKeysFemale[key],
                        chaveCanal=getChaveCanal(cur, self.channelId),
                        qtdViews=int(random.randint(int(viewsAvg*0.8),int(viewsAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
-                       video=self.id, categoria=self.category, nome=self.title,
+                       video=self.id, categoria=self.category, nome=self.title.encode('utf8'),
                        qtdGostei=int(random.randint(int(likesAvg*0.8), int(likesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
                        qtdNaoGostei=int(random.randint(int(dislikesAvg*0.8), int(dislikesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key])))
 
@@ -99,7 +99,7 @@ class Video(object):
                        chavePerfil=profileKeysMale[key],
                        chaveCanal=getChaveCanal(cur, self.channelId),
                        qtdViews=int(random.randint(int(viewsAvg*0.8),int(viewsAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
-                       video=self.id, categoria=self.category, nome=self.title,
+                       video=self.id, categoria=self.category, nome=self.title.encode('utf8'),
                        qtdGostei=int(random.randint(int(likesAvg*0.8), int(likesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
                        qtdNaoGostei=int(random.randint(int(dislikesAvg*0.8), int(dislikesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key])))
 
@@ -155,6 +155,7 @@ if __name__ == "__main__":
         try:
             video.insertion(cur)
             print "Done!"
-        except:
-            print "\n\tError: data already exists!"
+        except psycopg2.Error as error:
+            print "\n\t{}".format(error.pgerror)
+            conn.rollback()
 
