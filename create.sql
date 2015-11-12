@@ -36,6 +36,7 @@ CREATE TABLE Video (
     chaveCanal int NOT NULL,
     qtdViews int NOT NULL,
     video varchar NOT NULL,
+    categoria varchar NOT NULL,
     nome varchar NOT NULL,
     qtdGostei int NOT NULL,
     qtdNaoGostei int NOT NULL,
