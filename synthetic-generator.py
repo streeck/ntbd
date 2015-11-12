@@ -22,7 +22,7 @@ categoriesDict = {'1': "Filmes e desenhos", '2': "Automóveis", '10': "Música",
 
 class Video(object):
 
-    def __init__(self, id, date, channelId, title, views, likes, dislikes):
+    def __init__(self, id, date, channelId, title, views, likes, dislikes, category):
         self.id = id
         self.date = date
         self.channelId = channelId
@@ -30,6 +30,7 @@ class Video(object):
         self.views = views
         self.likes = likes
         self.dislikes = dislikes
+        self.category = categoriesDict['{}'.format(category)]
 
     def __repr__(self):
         print self.id
@@ -39,6 +40,7 @@ class Video(object):
         print self.views
         print self.likes
         print self.dislikes
+        print self.category
 
     def average(self, stat):
         pubDate = datetime.strptime(self.date, "%Y-%m-%d")
@@ -82,22 +84,22 @@ class Video(object):
 
         for day in self.daterange(pubDate, endDate):
             for key in profileKeysFemale.keys():
-                cur.execute("INSERT INTO Video VALUES ({chaveTempo}, {chavePerfil}, {chaveCanal}, {qtdViews}, '{video}', '{nome}', {qtdGostei}, {qtdNaoGostei});".format(
+                cur.execute("INSERT INTO Video VALUES ({chaveTempo}, {chavePerfil}, {chaveCanal}, {qtdViews}, '{video}', '{categoria}', '{nome}', {qtdGostei}, {qtdNaoGostei});".format(
                        chaveTempo=getChaveTempo(cur, day),
                        chavePerfil=profileKeysFemale[key],
                        chaveCanal=getChaveCanal(cur, self.channelId),
                        qtdViews=int(random.randint(int(viewsAvg*0.8),int(viewsAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
-                       video=self.id, nome=self.title,
+                       video=self.id, categoria=self.categoria, nome=self.title,
                        qtdGostei=int(random.randint(int(likesAvg*0.8), int(likesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
                        qtdNaoGostei=int(random.randint(int(dislikesAvg*0.8), int(dislikesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key])))
 
             for key in profileKeysMale.keys():
-                cur.execute("INSERT INTO Video VALUES ({chaveTempo}, {chavePerfil}, {chaveCanal}, {qtdViews}, '{video}', '{nome}', {qtdGostei}, {qtdNaoGostei});".format(
+                cur.execute("INSERT INTO Video VALUES ({chaveTempo}, {chavePerfil}, {chaveCanal}, {qtdViews}, '{video}', '{categoria}', '{nome}', {qtdGostei}, {qtdNaoGostei});".format(
                        chaveTempo=getChaveTempo(cur, day),
                        chavePerfil=profileKeysMale[key],
                        chaveCanal=getChaveCanal(cur, self.channelId),
                        qtdViews=int(random.randint(int(viewsAvg*0.8),int(viewsAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
-                       video=self.id, nome=self.title,
+                       video=self.id, categoria=self.categoria, nome=self.title,
                        qtdGostei=int(random.randint(int(likesAvg*0.8), int(likesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
                        qtdNaoGostei=int(random.randint(int(dislikesAvg*0.8), int(dislikesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key])))
 
@@ -132,7 +134,7 @@ if __name__ == "__main__":
     with open('synthetic-data.json', 'r') as fileInput:
         for video in json.loads(fileInput.read())["videos"]:
             aux = Video(video["id"], video["date"], video["channelId"],
-                        video["title"], video["stats"]["views"],
+                        video["title"], video["category"], video["stats"]["views"],
                         video["stats"]["likes"], video["stats"]["dislikes"])
             videoList.append(aux)
 
