@@ -10,14 +10,14 @@ profileKeysFemale = {'USF': 42, 'BRF': 46, 'GBF': 18}
 profileKeysMale = OrderedDict(sorted(profileKeysMale.items(), key=lambda t: t[1]))
 profileKeysFemale = OrderedDict(sorted(profileKeysFemale.items(), key=lambda t: t[1]))
 
-categoriesDict = {'1': "Filmes e desenhos", '2': "Automóveis", '10': "Música", '15': "Animais",
+categoriesDict = {'1': "Filmes e desenhos", '2': "Automoveis", '10': "Musica", '15': "Animais",
                   '17': "Esportes", '18': "Curtas", '19': "Viagens e eventos", '20': "Jogos",
-                  '21': "Videoblog", '22': "Pessoas e blogs", '23': "Comédia", '24': "Entretenimento",
-                  '25': "Notícias e política", '26': "Guias e Estilo", '27': "Educação",
-                  '28': "Ciência e tecnologia", '30': "Filmes", '31': "Desenho/animação",
-                  '32': "Ação/aventura", '33': "Clássicos", '34': "Comédia", '35': "Documentário",
-                  '36': "Drama", '37': "Família", '38': "Estrangeiro", '39': "Terror",
-                  '40': "Ficção científica/fantasia", '41': "Suspense", '42': "Curtas",
+                  '21': "Videoblog", '22': "Pessoas e blogs", '23': "Comedia", '24': "Entretenimento",
+                  '25': "Noticias e politica", '26': "Guias e Estilo", '27': "Educacao",
+                  '28': "Ciencia e tecnologia", '30': "Filmes", '31': "Desenho/animacao",
+                  '32': "Acao/aventura", '33': "Classicos", '34': "Comedia", '35': "Documentario",
+                  '36': "Drama", '37': "Familia", '38': "Estrangeiro", '39': "Terror",
+                  '40': "Ficcao cientifica/fantasia", '41': "Suspense", '42': "Curtas",
                   '43': "Programas", '44': "Trailers"}
 
 class Video(object):
@@ -89,7 +89,7 @@ class Video(object):
                        chavePerfil=profileKeysFemale[key],
                        chaveCanal=getChaveCanal(cur, self.channelId),
                        qtdViews=int(random.randint(int(viewsAvg*0.8),int(viewsAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
-                       video=self.id, categoria=self.categoria, nome=self.title,
+                       video=self.id, categoria=self.category, nome=self.title,
                        qtdGostei=int(random.randint(int(likesAvg*0.8), int(likesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
                        qtdNaoGostei=int(random.randint(int(dislikesAvg*0.8), int(dislikesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key])))
 
@@ -99,7 +99,7 @@ class Video(object):
                        chavePerfil=profileKeysMale[key],
                        chaveCanal=getChaveCanal(cur, self.channelId),
                        qtdViews=int(random.randint(int(viewsAvg*0.8),int(viewsAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
-                       video=self.id, categoria=self.categoria, nome=self.title,
+                       video=self.id, categoria=self.category, nome=self.title,
                        qtdGostei=int(random.randint(int(likesAvg*0.8), int(likesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key]),
                        qtdNaoGostei=int(random.randint(int(dislikesAvg*0.8), int(dislikesAvg*1.2)) * dic['{:.2}'.format(key)] * dic[key])))
 
@@ -134,8 +134,8 @@ if __name__ == "__main__":
     with open('synthetic-data.json', 'r') as fileInput:
         for video in json.loads(fileInput.read())["videos"]:
             aux = Video(video["id"], video["date"], video["channelId"],
-                        video["title"], video["category"], video["stats"]["views"],
-                        video["stats"]["likes"], video["stats"]["dislikes"])
+                        video["title"], video["stats"]["views"],
+                        video["stats"]["likes"], video["stats"]["dislikes"], video["category"])
             videoList.append(aux)
 
     try:
