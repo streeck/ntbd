@@ -1,0 +1,15 @@
+*.json
+video-9bZkp7q19f0
+video-mShwvzShLWU
+video-Oe7Lw5XEwHA
+video-V1bwmkdCMfg
+bertz/insertPSQL.py
+bertz/vera-info.py
+bertz/vera-videos.py
+bertz/vera.py
+vera/*
+raphael/*
+lu/*
+fanclub/*
+sample/*
+playground.py

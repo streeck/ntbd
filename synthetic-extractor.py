@@ -57,12 +57,14 @@ def youtube_video(options):
     print "Views: {:,}".format(int(video_result["statistics"]["viewCount"]))
     print "Likes: {:,}".format(int(video_result["statistics"]["likeCount"]))
     print "Dislikes: {:,}".format(int(video_result["statistics"]["dislikeCount"]))
+    print "Category: {}".format(video_result["snippet"]["categoryId"])
     print "\n------------------------------------------------\n"
 
     return {'id': '{}'.format(video_result["id"]),
             'channelId': '{}'.format(video_result["snippet"]["channelId"]),
             'title': u'{}'.format(video_result["snippet"]["title"]).encode('utf-8'),
             'date': video_result["snippet"]["publishedAt"][:10],
+            'category': video_result["snippet"]["categoryId"],
             'stats': {'views': int(video_result["statistics"]["viewCount"]),
                       'likes': int(video_result["statistics"]["likeCount"]),
                       'dislikes': int(video_result["statistics"]["dislikeCount"])}}
