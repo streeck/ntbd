@@ -10,6 +10,16 @@ profileKeysFemale = {'USF': 42, 'BRF': 46, 'GBF': 18}
 profileKeysMale = OrderedDict(sorted(profileKeysMale.items(), key=lambda t: t[1]))
 profileKeysFemale = OrderedDict(sorted(profileKeysFemale.items(), key=lambda t: t[1]))
 
+categoriesDict = {'1': "Filmes e desenhos", '2': "Automóveis", '10': "Música", '15': "Animais",
+                  '17': "Esportes", '18': "Curtas", '19': "Viagens e eventos", '20': "Jogos",
+                  '21': "Videoblog", '22': "Pessoas e blogs", '23': "Comédia", '24': "Entretenimento",
+                  '25': "Notícias e política", '26': "Guias e Estilo", '27': "Educação",
+                  '28': "Ciência e tecnologia", '30': "Filmes", '31': "Desenho/animação",
+                  '32': "Ação/aventura", '33': "Clássicos", '34': "Comédia", '35': "Documentário",
+                  '36': "Drama", '37': "Família", '38': "Estrangeiro", '39': "Terror",
+                  '40': "Ficção científica/fantasia", '41': "Suspense", '42': "Curtas",
+                  '43': "Programas", '44': "Trailers"}
+
 class Video(object):
 
     def __init__(self, id, date, channelId, title, views, likes, dislikes):
@@ -113,6 +123,7 @@ def updateChannels(cur, videoList):
         if not cur.fetchone():
             cur.execute("INSERT INTO Canal(canal, qtdInscritos) VALUES ('{channelId}', 0)".format(channelId=video.channelId))
             conn.commit()
+
 
 if __name__ == "__main__":
 
